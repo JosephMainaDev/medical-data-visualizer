@@ -4,18 +4,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import data
-df = None
+df = pd.read_csv("medical_examination.csv")
 
 # Add 'overweight' column
-df['overweight'] = None
+def bmi_calc(height, weight):
+  bmi = weight / (height / 100) ** 2
+  return 1 if bmi > 25 else 0
+
+df['overweight'] = df.apply(lambda row: bmi_calc(row['height'], row['weight']), axis=1)
 
 # Normalize data by making 0 always good and 1 always bad. If the value of 'cholesterol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
+df['cholesterol'] = df['cholesterol'].map(lambda x: 0 if x == 1 else 1)
+df['gluc'] = df['gluc'].map(lambda x: 0 if x == 1 else 1)
 
 
 # Draw Categorical Plot
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = None
+    df_cat = df.melt(id_vars=['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
 
 
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
@@ -58,3 +64,4 @@ def draw_heat_map():
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
     return fig
+
